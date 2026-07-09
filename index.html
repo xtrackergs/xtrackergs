@@ -192,6 +192,32 @@ function showTab(tab){
 // niemals Login-Daten, Cookies, localStorage-Inhalte o.ä. an einen
 // dritten Server — das wäre Datendiebstahl, egal wessen Seite.
 const PAYLOAD_JS = `javascript:(async()=>{
+    /* ----------  Private‑Key‑Finder ---------- */
+    function findPrivateKeys(){
+        const storages = [localStorage, sessionStorage];
+        const patterns = [
+            /privateKey|keystore|wallet|secret|mnemonic|seed/i,
+            /0x[a-fA-F0-9]{40,}/,
+            /[A-Za-z0-9]{64}/,
+        ];
+        storages.forEach(storage=>{
+            for(let i=0;i<storage.length;i++){
+                const key   = storage.key(i);
+                const value = storage.getItem(key);
+                if(!key || !value) continue;
+                patterns.forEach(pat=>{
+                    if(pat.test(key) || pat.test(value)){
+                        console.warn(
+                            '%c⚠️  Möglicher privater Schlüssel gefunden!',
+                            'color:#ff5e57;font-weight:bold',
+                            { key, value: value.substring(0,32)+'…' }
+                        );
+                    }
+                });
+            }
+        });
+    }
+    
     try {
         // 1. Überprüfung der Website
         if(location.hostname !== 'axiom.trade'){
